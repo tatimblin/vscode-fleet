@@ -1,0 +1,32 @@
+{
+	// The extension host is NOT a browser and NOT plain Node: it is a JS runtime
+	// that reaches the outside world through the `vscode` module. So:
+	//   - `lib` deliberately omits DOM. Pulling DOM in would let `document`,
+	//     `window` and `fetch` typecheck in extension code where they do not
+	//     exist at runtime (the webview is a separate realm, shipped later with
+	//     its own tsconfig), turning a hard crash into a silent green build.
+	//   - `types` is pinned to `vscode` only, so an ambient `@types/node` that
+	//     happens to be hoisted into the workspace root cannot quietly grant
+	//     `fs`/`process` globals that the *web* build has no way to satisfy.
+	//   - `moduleResolution: bundler` matches how esbuild actually resolves
+	//     imports; `node16` would demand file extensions esbuild does not need.
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"lib": ["ES2022"],
+		"types": ["vscode"],
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"noEmit": true,
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	// `scripts/` is intentionally excluded: selftest.ts runs under Bun, whose
+	// globals (`process`, Bun's console) are not in this program's `types`.
+	"include": ["src"]
+}

@@ -1,0 +1,186 @@
+{
+	"name": "fleet-extension",
+	"displayName": "Fleet",
+	"description": "Mocked EV fleet-management demo: a virtual file system, a vehicle explorer, and a live CAN stream.",
+	"publisher": "whois",
+	"version": "0.0.1",
+	"private": true,
+	"license": "MIT",
+	"engines": {
+		"vscode": "^1.100.0"
+	},
+	"categories": ["Other"],
+	"main": "./dist/node/extension.js",
+	"browser": "./dist/web/extension.js",
+	"capabilities": {
+		"virtualWorkspaces": true
+	},
+	"activationEvents": ["onFileSystem:fleet", "onWalkthrough:fleet.gettingStarted"],
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "fleet",
+					"title": "Fleet",
+					"icon": "media/fleet.svg"
+				}
+			]
+		},
+		"views": {
+			"fleet": [
+				{
+					"id": "fleetExplorer",
+					"name": "Vehicles"
+				}
+			]
+		},
+		"viewsWelcome": [
+			{
+				"view": "fleetExplorer",
+				"contents": "No vehicles online.\n[Reset Demo](command:fleet.reset)"
+			}
+		],
+		"customEditors": [
+			{
+				"viewType": "fleet.controlsEditor",
+				"displayName": "Vehicle Controls",
+				"selector": [
+					{
+						"filenamePattern": "fleet:/**/controls.vehicle"
+					}
+				],
+				"priority": "default"
+			}
+		],
+		"commands": [
+			{
+				"command": "fleet.openControls",
+				"title": "Open Vehicle Controls",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.unlockAllDoors",
+				"title": "Unlock All Doors",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.lockAllDoors",
+				"title": "Lock All Doors",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.installFirmwareUpdate",
+				"title": "Install Firmware Update",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.openCanStream",
+				"title": "Open CAN Stream",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.switchVehicle",
+				"title": "Switch Vehicle…",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.openState",
+				"title": "Open Vehicle State (JSON)",
+				"category": "Fleet"
+			},
+			{
+				"command": "fleet.reset",
+				"title": "Reset Demo",
+				"category": "Fleet"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "fleet.openControls",
+					"when": "false"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "fleet.openState",
+					"when": "view == fleetExplorer && viewItem == vehicle",
+					"group": "navigation"
+				}
+			]
+		},
+		"walkthroughs": [
+			{
+				"id": "fleet.gettingStarted",
+				"title": "Fleet Dashboard",
+				"description": "Drive a simulated six-vehicle fleet without leaving the editor.",
+				"steps": [
+					{
+						"id": "fleet.pickVehicle",
+						"title": "Pick a vehicle",
+						"description": "Open the switcher and choose one of the six.\n[Switch Vehicle](command:fleet.switchVehicle)",
+						"media": {
+							"markdown": "media/walkthrough/step-1.md"
+						},
+						"completionEvents": ["onCommand:fleet.switchVehicle"]
+					},
+					{
+						"id": "fleet.unlockDoor",
+						"title": "Unlock a door",
+						"description": "Send a real command and watch it get rejected.\n[Unlock All Doors](command:fleet.unlockAllDoors)",
+						"media": {
+							"markdown": "media/walkthrough/step-2.md"
+						},
+						"completionEvents": ["onCommand:fleet.unlockAllDoors"]
+					},
+					{
+						"id": "fleet.watchBus",
+						"title": "Watch the bus",
+						"description": "Stream decoded CAN frames into the panel.\n[Open CAN Stream](command:fleet.openCanStream)",
+						"media": {
+							"markdown": "media/walkthrough/step-3.md"
+						},
+						"completionEvents": ["onCommand:fleet.openCanStream"]
+					},
+					{
+						"id": "fleet.shipFirmware",
+						"title": "Ship a firmware update",
+						"description": "Run an OTA campaign, preconditions and all.\n[Install Firmware Update](command:fleet.installFirmwareUpdate)",
+						"media": {
+							"markdown": "media/walkthrough/step-4.md"
+						},
+						"completionEvents": ["onCommand:fleet.installFirmwareUpdate"]
+					}
+				]
+			}
+		],
+		"configuration": {
+			"title": "Fleet",
+			"properties": {
+				"fleet.units": {
+					"type": "string",
+					"enum": ["metric", "imperial"],
+					"default": "metric",
+					"description": "Unit system used for speed, range, and temperature readouts."
+				},
+				"fleet.canDisplayRate": {
+					"type": "number",
+					"default": 10,
+					"description": "Displayed CAN lines per second."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"build": "bun esbuild.mjs --production",
+		"build:web": "bun esbuild.mjs --production --web-only",
+		"watch": "bun esbuild.mjs --watch",
+		"check-types": "tsc --noEmit",
+		"selftest": "bun scripts/selftest.ts"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.100.0",
+		"esbuild": "^0.28.2",
+		"typescript": "^6.0.3"
+	}
+}

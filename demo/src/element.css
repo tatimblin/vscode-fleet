@@ -1,0 +1,272 @@
+/* <fleet-demo> — site-side styling for the poster/launch lifecycle.
+ *
+ * This renders in the blog page (NOT inside the workbench iframe), so it
+ * speaks the site's design-system tokens — always with literal fallbacks, per
+ * the packages/* convention, so the element degrades gracefully anywhere the
+ * token cascade is absent. */
+
+fleet-demo {
+	/* Height of the reset strip above the frame (see "embed chrome" below).
+	   A local knob rather than a DS token: it is the size of one specific
+	   piece of chrome, not a spacing step. */
+	--fleet-demo-chrome-height: 28px;
+
+	position: relative;
+	display: block;
+	overflow: hidden;
+	aspect-ratio: 16 / 10;
+	border-radius: var(--border-radius-2, 12px);
+	border: 1px solid var(--color-border, rgba(128, 128, 128, 0.35));
+	background: #1f1f1f; /* Dark Modern editor chrome, so the reveal doesn't flash */
+}
+
+/* --- poster ---------------------------------------------------------------- */
+
+fleet-demo [data-poster] {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4, 16px);
+	transition-property: opacity, visibility;
+	transition-duration: 0.35s;
+	transition-timing-function: ease;
+}
+
+fleet-demo [data-poster] img {
+	max-width: 100%;
+	height: 100%;
+	object-fit: cover;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+}
+
+/* Once the workbench is live, the poster fades out from over the iframe. */
+fleet-demo[data-state="ready"] [data-poster] {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+/* --- launch button --------------------------------------------------------- */
+
+fleet-demo [data-launch] {
+	position: relative;
+	cursor: pointer;
+	font: inherit;
+	padding: var(--space-3, 12px) var(--space-5, 24px);
+	border: none;
+	border-radius: var(--border-radius-1, 8px);
+	background: var(--color-accent, #5686f5);
+	color: #ffffff;
+	transition-property: transform, opacity;
+	transition-duration: 0.15s;
+	transition-timing-function: ease;
+}
+
+fleet-demo [data-launch]:hover:not([disabled]) {
+	transform: scale(1.03);
+}
+
+fleet-demo [data-launch][disabled] {
+	cursor: default;
+	opacity: 0.6;
+}
+
+fleet-demo[data-state="launching"] [data-launch],
+fleet-demo[data-state="ready"] [data-launch] {
+	visibility: hidden;
+}
+
+/* --- small-viewport caption ------------------------------------------------ */
+
+/* Shown only on narrow viewports (see the sizing block at the foot of this
+   file). On a desktop the button is the whole story; on a phone it is worth
+   saying, before the tap, that the workbench is about to be tight. The
+   consumer authors the wording. */
+fleet-demo [data-caption] {
+	display: none;
+	color: var(--color-muted, rgba(160, 160, 160, 0.9));
+	font-size: 0.85em;
+	text-align: center;
+	padding-inline: var(--space-4, 16px);
+}
+
+/* --- iframe ---------------------------------------------------------------- */
+
+fleet-demo iframe[data-fleet-demo-frame] {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	display: block;
+}
+
+/* The workbench boots underneath the poster; it is only interactable once
+   ready (the poster overlay swallows pointer events until it fades). */
+
+/* --- embed chrome (reset) --------------------------------------------------- */
+
+/* The strip only exists once the element mounts it, i.e. from `ready` on, so
+   the poster and the boot never see it. Then the frame gives up its top edge
+   to it. Ceding height beats floating a chip over a corner — every corner of a
+   booted workbench is a live control surface (status bar, editor actions, view
+   title), and the status bar in particular would make a floating chip read as
+   part of VS Code's own UI.
+
+   The height is stated, not left to `auto` against the base rule's `inset: 0`.
+   An iframe is a REPLACED element: `height: auto` resolves to its intrinsic
+   150px and `bottom` is then dropped as over-constrained, which collapses the
+   workbench to a sliver — a wrong that looks, from the outside, exactly like a
+   demo that booted. */
+fleet-demo[data-state="ready"] iframe[data-fleet-demo-frame] {
+	top: var(--fleet-demo-chrome-height, 28px);
+	height: calc(100% - var(--fleet-demo-chrome-height, 28px));
+}
+
+fleet-demo .fleet-demo-chrome {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	height: var(--fleet-demo-chrome-height, 28px);
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	padding-inline: var(--space-2, 8px);
+	/* Fixed dark values, not theme tokens: this strip is welded to the top of a
+	   Dark Modern workbench in both site themes, exactly like [data-caption]'s
+	   colour (see the consumer's note on --color-muted). */
+	background: #1f1f1f;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	z-index: 1;
+}
+
+/* Quiet until wanted: the demo is the content, this is the fire escape. */
+fleet-demo .fleet-demo-reset {
+	cursor: pointer;
+	font: inherit;
+	font-size: 0.72em;
+	line-height: 1;
+	letter-spacing: 0.02em;
+	padding: var(--space-1, 4px) var(--space-2, 8px);
+	border: 1px solid transparent;
+	border-radius: var(--border-radius-0, 4px);
+	background: transparent;
+	color: rgba(235, 238, 245, 0.55);
+	transition-property: color, background-color, border-color;
+	transition-duration: 0.15s;
+	transition-timing-function: ease;
+}
+
+fleet-demo .fleet-demo-reset:hover,
+fleet-demo .fleet-demo-reset:focus-visible {
+	color: rgba(235, 238, 245, 0.95);
+	background-color: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* --- boot progress --------------------------------------------------------- */
+
+fleet-demo .fleet-demo-progress {
+	position: absolute;
+	left: 50%;
+	bottom: var(--space-6, 32px);
+	transform: translateX(-50%);
+	width: min(280px, 60%);
+	height: 4px;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.18);
+	overflow: hidden;
+	z-index: 1;
+}
+
+fleet-demo .fleet-demo-progress-fill {
+	height: 100%;
+	width: 0%;
+	background: var(--color-accent, #5686f5);
+	transition-property: width;
+	transition-duration: 0.3s;
+	transition-timing-function: ease-out;
+}
+
+/* --- error ------------------------------------------------------------------ */
+
+fleet-demo .fleet-demo-error {
+	position: absolute;
+	left: 50%;
+	bottom: var(--space-6, 32px);
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	gap: var(--space-3, 12px);
+	padding: var(--space-2, 8px) var(--space-4, 16px);
+	border-radius: var(--border-radius-1, 8px);
+	background: rgba(0, 0, 0, 0.75);
+	color: #ffffff;
+	font-size: 0.9em;
+	z-index: 1;
+}
+
+fleet-demo .fleet-demo-error [data-retry] {
+	cursor: pointer;
+	font: inherit;
+	padding: var(--space-1, 4px) var(--space-3, 12px);
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	border-radius: var(--border-radius-0, 4px);
+	background: transparent;
+	color: inherit;
+}
+
+/* --- narrow viewports ------------------------------------------------------- */
+
+/* Phones boot the real workbench now (element.ts dropped the 768px gate), so
+   they need a shape a workbench can actually live in. The desktop 16/10 box is
+   a ~245px-tall letterbox at 390px wide — once the reset strip, the tab bar,
+   the 260px panel and the status bar have taken their fixed heights there is
+   nothing left over to be an editor at all.
+
+   3/4 measured better than the alternatives at 393x659 (an iPhone 15): the
+   frame comes out 361x481, the workbench 359x451, and the parts then divide as
+   sidebar 170x399 / editor 300x139 / panel 300x260 / status bar 22 — every one
+   of them present, and ~25% of the screen still showing the article around it,
+   so the embed reads as a figure in a post rather than a takeover. A taller
+   ratio buys the editor another ~45px and costs that context; not worth it,
+   because height is not what is actually tight here. WIDTH is: VS Code's grid
+   holds the editor to a 300px minimum, so with the sidebar open the editor and
+   panel start at x=218 and their right ~160px is clipped by the workbench.
+   No aspect ratio can fix that — only closing the sidebar can, which is one
+   tap on the activity bar and is the escape a phone reader has. The demo is
+   cramped there, knowingly.
+
+   `aspect-ratio` rather than a flat height so the box still scales with the
+   column. `max-height` then keeps the same rule honest on a landscape phone,
+   where 3/4 of a 760px-wide column would be a metre-tall frame the reader has
+   to scroll past. Height wins over the ratio there and the box just gets wider
+   — which is the right answer for that viewport anyway. */
+@media (max-width: 767px) {
+	fleet-demo {
+		aspect-ratio: 3 / 4;
+		max-height: 80vh; /* fallback where svh is not understood */
+		max-height: 80svh;
+	}
+
+	fleet-demo [data-caption] {
+		display: block;
+	}
+}
+
+/* --- reduced motion --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+	fleet-demo [data-poster],
+	fleet-demo [data-launch],
+	fleet-demo .fleet-demo-reset,
+	fleet-demo .fleet-demo-progress-fill {
+		transition-duration: 0s;
+	}
+}

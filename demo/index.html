@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="robots" content="noindex" />
+		<title>Fleet demo — VS Code</title>
+		<style>
+			/* This page only ever renders inside the <fleet-demo> iframe: the chrome
+			   here is the workbench's own (Dark Modern), not the site theme. */
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				height: 100%;
+				background: #1f1f1f;
+			}
+			#boot-indicator {
+				position: absolute;
+				inset: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #9d9d9d;
+				font-family:
+					-apple-system, "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
+				font-size: 13px;
+				letter-spacing: 0.02em;
+			}
+			#workbench {
+				height: 100vh;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="boot-indicator" aria-live="polite">Starting VS Code…</div>
+		<div id="workbench"></div>
+		<script type="module" src="/src/workbench.ts"></script>
+	</body>
+</html>

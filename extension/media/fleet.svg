@@ -1,0 +1,9 @@
+<!--
+	Activity bar icon. VS Code renders activity bar icons at 24x24 and recolours
+	them by CSS, so this is a single-path monochrome silhouette using
+	`currentColor`: a multi-colour or hardcoded-fill icon would stay the wrong
+	colour when the user switches between a light and a dark theme.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+	<path d="M4 10.5 5.6 6.2A2 2 0 0 1 7.5 5h9a2 2 0 0 1 1.9 1.2L20 10.5a2 2 0 0 1 1 1.7V17a1 1 0 0 1-1 1h-1.5a1 1 0 0 1-1-1v-1H6.5v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4.8a2 2 0 0 1 1-1.7Zm2.1-.5h11.8l-1.2-3.2a.5.5 0 0 0-.5-.3h-8.4a.5.5 0 0 0-.5.3ZM7 12.5a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Zm10 0a1.25 1.25 0 1 0 0 2.5 1.25 1.25 0 0 0 0-2.5Z"/>
+</svg>

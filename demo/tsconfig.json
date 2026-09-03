@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"strict": true,
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"types": ["vite/client"],
+		"lib": ["esnext", "dom", "dom.iterable"]
+	},
+	"include": ["src", "vite.config.ts"]
+}
