@@ -21,7 +21,7 @@ Two deliverables live here:
 
 ## Build-step deviation from the `@whois/*` convention
 
-Every other `packages/*` component ships raw TypeScript that Astro's own Vite
+The other `@whois/*` packages ship raw TypeScript that Astro's own Vite
 consumes directly. This package **cannot**: monaco-vscode-api needs its own
 Vite pipeline (CSS-as-string resolution, ES-module workers, `esnext` target,
 a dedicated dependency graph) that must not leak into — or inherit from —
@@ -47,14 +47,15 @@ avoid). Anything you actually ship goes through `build`.
 
 ### Why `build` is `bunx --bun vite build` and not plain `vite build`
 
-Do not "simplify" this back to `vite build`. Netlify's deploy-preview image
-pins `NODE_VERSION` to node 16, and this package's Vite requires node 20.19+ —
-plain `vite build` resolves through node's shebang and dies with
-`ReferenceError: CustomEvent is not defined` before it prints anything useful.
-Nothing else in the repo noticed, because every other build step already runs
-under Bun (`bunx --bun astro build`); this package was simply the first thing
-here to touch system node at all. Running Vite under Bun's runtime makes the
-build independent of whatever node the CI image happens to ship.
+Do not "simplify" this back to `vite build`. This package's Vite requires node
+20.19+, and plain `vite build` resolves through node's shebang to whatever
+system node the machine has — on the old Netlify deploy-preview image, node 16,
+where it died with `ReferenceError: CustomEvent is not defined` before printing
+anything useful. Nothing else in the repo noticed, because every other build
+step already runs under Bun (`bunx --bun astro build`); this package was simply
+the first thing here to touch system node at all. Running Vite under Bun's
+runtime makes the build independent of whatever node the CI image (today
+GitHub Actions with Bun, `.github/workflows/deploy.yml`) happens to ship.
 
 `dev` deliberately stays plain `vite` — the `--bun` runtime is for the
 non-interactive build only, mirroring AGENTS.md's warning that `--bun` breaks

@@ -11,16 +11,18 @@ Nothing here talks to a real vehicle. The fleet is seeded in
 
 ## This package has a build step
 
-Every other package in `packages/*` is a `@whois/*` workspace package with **no
-build step** — it exports TypeScript source directly and Astro/Vite compiles it
-as part of the site build.
+The `@whois/*` workspace packages in `packages/*` have **no build step** — they
+export TypeScript source directly and Astro/Vite compiles it as part of the site
+build.
 
-**This package deliberately breaks that convention.** VS Code does not compile
+**This package deliberately breaks that convention** (and so does the workbench
+page in `packages/vscode-fleet-demo`, which consumes it). VS Code does not compile
 extensions: the extension host `require()`s a single JavaScript file named by
 `main` (desktop) or `browser` (web worker), so the extension has to arrive
 pre-bundled. There is no bundler in the loop to fix it up. It is also not named
-`@whois/*` and is not a dependency of the site — the site will load its *built
-output*, not its source.
+`@whois/*` and is not a dependency of the site — the site loads its *built
+output* (`dist/web/extension.js`, imported `?raw` by
+`packages/vscode-fleet-demo`), not its source.
 
 ## Layout
 
@@ -55,14 +57,14 @@ bun run --cwd packages/fleet-extension selftest
 4. In the new window, run **Fleet: Reset Demo** from the Command Palette, or
    open the Fleet view in the activity bar.
 
-The extension declares `activationEvents: ["onFileSystem:fleet"]` explicitly
+The extension declares `onFileSystem:fleet` in `activationEvents` explicitly
 rather than relying on the implicit activation VS Code infers from
 `contributes`: a virtual workspace opened at a `fleet:` URI must activate the
 extension *before* anything tries to read a file from it, and inferred
 activation does not fire early enough for that.
 
-To debug the web build instead, run `vscode-test-web` against `dist/web` (added
-in a later unit).
+To debug the web build instead, run `vscode-test-web` (`bunx @vscode/test-web`;
+not a dependency of the repo) against `dist/web`.
 
 ## Build flags
 
