@@ -1,0 +1,13 @@
+{
+	"name": "vscode-fleet",
+	"private": true,
+	"type": "module",
+	"workspaces": ["extension", "demo"],
+	"scripts": {
+		"build": "bun run --cwd extension build:web && bun run --cwd demo build",
+		"dev": "bun run --cwd extension build:web && bun run --cwd demo dev",
+		"check-types": "bun run --cwd extension check-types && bun run --cwd demo check-types",
+		"test": "bun run --cwd extension selftest && bun run --cwd demo test",
+		"release": "bun scripts/release.ts"
+	}
+}

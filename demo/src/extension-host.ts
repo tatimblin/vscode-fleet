@@ -5,7 +5,7 @@ import { ExtensionHostKind, registerExtension } from "@codingame/monaco-vscode-a
 // build time so the contributes block (views container, tree view, custom
 // editor, commands, walkthrough, configuration) that vsce would package is
 // exactly what the embedded workbench registers — no hand-maintained copy.
-import fleetManifest from "../../fleet-extension/package.json" with { type: "json" };
+import fleetManifest from "../../extension/package.json" with { type: "json" };
 
 // The extension's BUILT web bundle, as a string. This is the same artifact the
 // .vsix packages (`browser` in the manifest → dist/web/extension.js), so the
@@ -14,16 +14,16 @@ import fleetManifest from "../../fleet-extension/package.json" with { type: "jso
 // necessary because the bundle is CommonJS (`format: "cjs"`, see the
 // extension's esbuild.mjs) and expects the classic (module, exports, require)
 // environment of a VS Code extension host.
-import fleetExtensionSource from "../../fleet-extension/dist/web/extension.js?raw";
+import fleetExtensionSource from "../../extension/dist/web/extension.js?raw";
 
 // The extension's static assets, emitted as hashed site assets by Vite and
 // re-registered under the extension's virtual location below so manifest
 // references like `media/fleet.svg` resolve inside the workbench.
-import fleetIconUrl from "../../fleet-extension/media/fleet.svg?url";
-import step1Url from "../../fleet-extension/media/walkthrough/step-1.md?url";
-import step2Url from "../../fleet-extension/media/walkthrough/step-2.md?url";
-import step3Url from "../../fleet-extension/media/walkthrough/step-3.md?url";
-import step4Url from "../../fleet-extension/media/walkthrough/step-4.md?url";
+import fleetIconUrl from "../../extension/media/fleet.svg?url";
+import step1Url from "../../extension/media/walkthrough/step-1.md?url";
+import step2Url from "../../extension/media/walkthrough/step-2.md?url";
+import step3Url from "../../extension/media/walkthrough/step-3.md?url";
+import step4Url from "../../extension/media/walkthrough/step-4.md?url";
 
 type ExtensionManifest = Parameters<typeof registerExtension>[0];
 
@@ -38,7 +38,7 @@ interface FleetExtensionExports {
  *
  * ## Why evaluate the CJS bundle instead of importing the TS source
  *
- * The alternative bridge — importing packages/fleet-extension/src/web/
+ * The alternative bridge — importing extension/src/web/
  * extension.ts and letting Vite bundle it with `vscode` aliased to the API —
  * would couple this package to the extension's TypeScript config and would
  * ship a *different* artifact than the .vsix. Evaluating the built bundle
@@ -110,7 +110,7 @@ export async function activateFleetExtension(): Promise<typeof vscode> {
 	}
 
 	// The extension only reads `context.subscriptions` (see activateCommon in
-	// packages/fleet-extension/src/common/extension.ts), so the synthetic
+	// extension/src/common/extension.ts), so the synthetic
 	// context stays honest and minimal. The page's lifetime is the demo's
 	// lifetime — the iframe is torn down wholesale — so nothing ever disposes
 	// these subscriptions individually.

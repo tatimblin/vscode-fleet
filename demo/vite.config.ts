@@ -7,7 +7,9 @@ const pkg = await import("./package.json", { with: { type: "json" } }).then((m) 
  * any of these packages in the module graph means two service registries and
  * an unbootable workbench, hence the dedupe + optimizeDeps lists below.
  */
-const vscodeDeps = Object.keys(pkg.dependencies).filter(
+// devDependencies, not dependencies: the published package is the prebuilt
+// dist, so a consumer installing it must not pull ~25 monaco packages.
+const vscodeDeps = Object.keys(pkg.devDependencies).filter(
 	(name) =>
 		name.startsWith("@codingame/monaco-vscode-") || name === "vscode" || name === "monaco-editor"
 );
@@ -19,9 +21,9 @@ export default defineConfig({
 	build: {
 		// esnext: monaco-vscode-api ships top-level await; downlevelling breaks it.
 		target: "esnext",
-		// The built page is a site asset, served by Astro's public/ passthrough.
-		// It is gitignored and rebuilt by `bun run build:fleet-demo`.
-		outDir: "../../public/fleet-demo",
+		// The built page ships in the package tarball as dist/; a consuming site
+		// copies it to its own /fleet-demo/ (the `base` above).
+		outDir: "dist",
 		emptyOutDir: true
 	},
 	worker: {

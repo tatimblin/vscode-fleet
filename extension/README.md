@@ -11,18 +11,13 @@ Nothing here talks to a real vehicle. The fleet is seeded in
 
 ## This package has a build step
 
-The `@whois/*` workspace packages in `packages/*` have **no build step** — they
-export TypeScript source directly and Astro/Vite compiles it as part of the site
-build.
+VS Code does not compile extensions: the extension host `require()`s a single
+JavaScript file named by `main` (desktop) or `browser` (web worker), so the
+extension has to arrive pre-bundled. There is no bundler in the loop to fix it
+up. The embed in [`../demo`](../demo/README.md) loads its *built output*
+(`dist/web/extension.js`, imported `?raw`), not its source.
 
-**This package deliberately breaks that convention** (and so does the workbench
-page in `packages/vscode-fleet-demo`, which consumes it). VS Code does not compile
-extensions: the extension host `require()`s a single JavaScript file named by
-`main` (desktop) or `browser` (web worker), so the extension has to arrive
-pre-bundled. There is no bundler in the loop to fix it up. It is also not named
-`@whois/*` and is not a dependency of the site — the site loads its *built
-output* (`dist/web/extension.js`, imported `?raw` by
-`packages/vscode-fleet-demo`), not its source.
+It is demo-only: `private`, never published to the Marketplace or Open VSX.
 
 ## Layout
 
@@ -40,18 +35,18 @@ bundle without dragging the host API into a browser realm.
 ## Develop
 
 ```sh
-bun install                                    # from the repo root (workspaces)
-bun run --cwd packages/fleet-extension build   # node + web bundles into dist/
-bun run --cwd packages/fleet-extension build:web
-bun run --cwd packages/fleet-extension watch   # rebuild on change
-bun run --cwd packages/fleet-extension check-types
-bun run --cwd packages/fleet-extension selftest
+bun install                          # from the repo root (workspaces)
+bun run --cwd extension build        # node + web bundles into dist/
+bun run --cwd extension build:web
+bun run --cwd extension watch        # rebuild on change
+bun run --cwd extension check-types
+bun run --cwd extension selftest
 ```
 
 ### F5 in VS Code
 
-1. `bun run --cwd packages/fleet-extension build` (or leave `watch` running).
-2. Open `packages/fleet-extension` as the workspace folder in VS Code.
+1. `bun run --cwd extension build` (or leave `watch` running).
+2. Open `extension/` as the workspace folder in VS Code.
 3. Press <kbd>F5</kbd> to launch an Extension Development Host with this
    extension loaded from `dist/`.
 4. In the new window, run **Fleet: Reset Demo** from the Command Palette, or

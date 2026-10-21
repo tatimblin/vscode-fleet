@@ -2,7 +2,7 @@
  *
  * This renders in the blog page (NOT inside the workbench iframe), so it
  * speaks the site's design-system tokens — always with literal fallbacks, per
- * the packages/* convention, so the element degrades gracefully anywhere the
+ * the host site's convention, so the element degrades gracefully anywhere the
  * token cascade is absent. */
 
 fleet-demo {
