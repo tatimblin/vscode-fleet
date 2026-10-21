@@ -15,9 +15,13 @@ fleet-demo {
 	display: block;
 	overflow: hidden;
 	aspect-ratio: 16 / 10;
-	border-radius: var(--border-radius-2, 12px);
-	border: 1px solid var(--color-border, rgba(128, 128, 128, 0.35));
-	background: #1f1f1f; /* Dark Modern editor chrome, so the reveal doesn't flash */
+	/* The site's edge and corner (the DS --border / --radius-box) when the
+	   token cascade is there, a plain hairline box when it is not. */
+	border-radius: var(--radius-box, 12px);
+	border: var(--border, 1px solid var(--color-border, rgba(128, 128, 128, 0.35)));
+	/* Fixed, not a theme token: Dark Modern editor chrome in both site
+	   themes, so the reveal doesn't flash. */
+	background: #1f1f1f;
 }
 
 /* --- poster ---------------------------------------------------------------- */
@@ -61,7 +65,7 @@ fleet-demo [data-launch] {
 	border: none;
 	border-radius: var(--border-radius-1, 8px);
 	background: var(--color-accent, #5686f5);
-	color: #ffffff;
+	color: var(--on-accent, #ffffff);
 	transition-property: transform, opacity;
 	transition-duration: 0.15s;
 	transition-timing-function: ease;
